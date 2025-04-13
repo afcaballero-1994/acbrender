@@ -70,19 +70,26 @@ int main() {
   std::vector<Vertex> vertices {v1, v2, v3};
   unsigned int VBO, VAO;
 
-  glCreateBuffers(1, &VBO);
-  glNamedBufferStorage(VBO, sizeof(Vertex) * vertices.size(), vertices.data(),
-                       GL_DYNAMIC_STORAGE_BIT);
-  glCreateVertexArrays(1, &VAO);
-  glVertexArrayVertexBuffer(VAO, 0, VBO, 0, sizeof(Vertex));
+  std::vector<glm::vec3> positions {glm::vec3 {-0.5f, -0.5f, 0.0f}, glm::vec3{0.5f, -0.5f, 0.0f}, glm::vec3 {0.0f, 0.5f, 0.0f}};
+  std::vector<glm::vec3> colors {glm::vec3 {1.0f, 0.0f, 0.0f}, glm::vec3 {0.0f, 1.0f, 0.0f}, glm::vec3 {0.0f, 0.0f, 1.0f}};
 
-  glEnableVertexArrayAttrib(VAO, 0);
-  glEnableVertexArrayAttrib(VAO, 1);
-  glVertexArrayAttribFormat(VAO, 0, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, pos));
-  glVertexArrayAttribFormat(VAO, 1, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, col));
+  glCreateVertexArrays(1, &VAO);
+  glCreateBuffers(1, &VBO);
+
+  glVertexArrayVertexBuffer(VAO, 0, VBO, 0, sizeof(float) * 3);
+
+  glNamedBufferStorage(VBO, sizeof(float) * 9 + sizeof(float) * 9, nullptr, GL_DYNAMIC_STORAGE_BIT);
+  glNamedBufferSubData(VBO, 0, sizeof(float) * 9, positions.data());
+  glNamedBufferSubData(VBO, sizeof(float) * 9, sizeof(float) * 9, colors.data());
+
+  glVertexArrayAttribFormat(VAO, 0, positions.size(), GL_FLOAT, GL_FALSE, 0);
+  glVertexArrayAttribFormat(VAO, 1, colors.size(), GL_FLOAT, GL_FALSE, sizeof(float) * 9);
 
   glVertexArrayAttribBinding(VAO, 0, 0);
   glVertexArrayAttribBinding(VAO, 1, 0);
+
+  glEnableVertexArrayAttrib(VAO, 0);
+  glEnableVertexArrayAttrib(VAO, 1);
 
   glBindVertexArray(VAO);
 
@@ -102,14 +109,17 @@ int main() {
 
     glUseProgram(shader);
 
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    const float background_color[] {0.1f, 0.2f, 0.2f, 1.0f};
+
+    glClearBufferfv(GL_COLOR, 0, background_color);
+    glClear(GL_DEPTH_BUFFER_BIT);
 
     glDrawArrays(GL_TRIANGLES, 0, 3);
     glfwSwapBuffers(window);
     
   }
 
+  glDeleteProgram(shader);
   glDeleteVertexArrays(1, &VAO);
   glDeleteBuffers(1, &VBO);
 
@@ -198,6 +208,9 @@ unsigned int compile_shader(const std::string& vertex_shader,
 
   glDetachShader(program, vertex_shader_ID);
   glDetachShader(program, fragment_shader_ID);
+
+  glDeleteShader(vertex_shader_ID);
+  glDeleteShader(fragment_shader_ID);
 
   return program;
 }
