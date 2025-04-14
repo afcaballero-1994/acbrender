@@ -31,11 +31,13 @@ void window_size_callback(GLFWwindow *window, int width, int height);
 void key_callback(GLFWwindow *window, int key, int scan_code, int action, int mods);
   
 int main() {
-  glfwInit();
+  glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_X11);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
+
+  glfwInit();
 
   GLFWwindow* window = glfwCreateWindow(
                                         width_window,
@@ -70,20 +72,22 @@ int main() {
   std::vector<Vertex> vertices {v1, v2, v3};
   unsigned int VBO, VAO;
 
-  std::vector<glm::vec3> positions {glm::vec3 {-0.5f, -0.5f, 0.0f}, glm::vec3{0.5f, -0.5f, 0.0f}, glm::vec3 {0.0f, 0.5f, 0.0f}};
-  std::vector<glm::vec3> colors {glm::vec3 {1.0f, 0.0f, 0.0f}, glm::vec3 {0.0f, 1.0f, 0.0f}, glm::vec3 {0.0f, 0.0f, 1.0f}};
+  std::vector<glm::vec3> positions {glm::vec3 {1.0f, 1.0f, 0.0f}, glm::vec3{1.0f, -1.0f, 0.0f}, glm::vec3 {-1.0f, -1.0f, 0.0f}, glm::vec3 {-1.0f, 1.0f, 0.0f}};
+  std::vector<glm::vec3> colors {glm::vec3 {1.0f, 0.0f, 0.0f}, glm::vec3 {0.0f, 1.0f, 0.0f}, glm::vec3 {0.0f, 0.0f, 1.0f}, glm::vec3 {1.0f, 1.0f, 1.0f}};
+  std::vector<glm::uvec3> indices {glm::uvec3 {0, 1, 3}, glm::uvec3 {1, 2, 3}};
 
   glCreateVertexArrays(1, &VAO);
   glCreateBuffers(1, &VBO);
 
   glVertexArrayVertexBuffer(VAO, 0, VBO, 0, sizeof(float) * 3);
 
-  glNamedBufferStorage(VBO, sizeof(float) * 9 + sizeof(float) * 9, nullptr, GL_DYNAMIC_STORAGE_BIT);
-  glNamedBufferSubData(VBO, 0, sizeof(float) * 9, positions.data());
-  glNamedBufferSubData(VBO, sizeof(float) * 9, sizeof(float) * 9, colors.data());
+  glNamedBufferStorage(VBO, sizeof(float) * 3 * 4 + sizeof(float) * 3 * 4 + sizeof(unsigned int) * 3 * 2, nullptr, GL_DYNAMIC_STORAGE_BIT);
+  glNamedBufferSubData(VBO, 0, sizeof(float) * 3 * 4, positions.data());
+  glNamedBufferSubData(VBO, sizeof(float) * 3 * 4, sizeof(float) * 4 * 3, colors.data());
+  glNamedBufferSubData(VBO, 2 * sizeof(float) * 3 * 4, sizeof(unsigned int) * 2 * 3, indices.data());
 
-  glVertexArrayAttribFormat(VAO, 0, positions.size(), GL_FLOAT, GL_FALSE, 0);
-  glVertexArrayAttribFormat(VAO, 1, colors.size(), GL_FLOAT, GL_FALSE, sizeof(float) * 9);
+  glVertexArrayAttribFormat(VAO, 0, 3, GL_FLOAT, GL_FALSE, 0);
+  glVertexArrayAttribFormat(VAO, 1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3 * 4);
 
   glVertexArrayAttribBinding(VAO, 0, 0);
   glVertexArrayAttribBinding(VAO, 1, 0);
@@ -108,13 +112,15 @@ int main() {
     }
 
     glUseProgram(shader);
+    glUniform2f(2, width_window, height_window);
 
     const float background_color[] {0.1f, 0.2f, 0.2f, 1.0f};
 
     glClearBufferfv(GL_COLOR, 0, background_color);
     glClear(GL_DEPTH_BUFFER_BIT);
 
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    //glDrawArrays(GL_TRIANGLES, 0, 6);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, indices.data());
     glfwSwapBuffers(window);
     
   }
@@ -123,6 +129,7 @@ int main() {
   glDeleteVertexArrays(1, &VAO);
   glDeleteBuffers(1, &VBO);
 
+  glfwDestroyWindow(window);
   glfwTerminate();
 
   return 0;
@@ -154,7 +161,7 @@ void check_stage_status(unsigned int id, GLenum pname) {
     if(result == GL_FALSE) {
       int maxLength {};
       glGetShaderiv(id, GL_INFO_LOG_LENGTH, &maxLength);
-      char *infoLog = nullptr;
+      char infoLog[maxLength];
       glGetShaderInfoLog(id, maxLength, &maxLength, &infoLog[0]);
       if(pname == GL_LINK_STATUS){
         std::cout << "Error linking" << std::endl;
@@ -168,7 +175,7 @@ void check_stage_status(unsigned int id, GLenum pname) {
     if(result == GL_FALSE) {
       int maxLength {};
       glGetShaderiv(id, GL_INFO_LOG_LENGTH, &maxLength);
-      char *infoLog = nullptr;
+      char infoLog[maxLength];
       glGetShaderInfoLog(id, maxLength, &maxLength, &infoLog[0]);
       if(pname == GL_COMPILE_STATUS){
         std::cout << "Error compiling" << std::endl;
