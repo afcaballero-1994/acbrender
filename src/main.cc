@@ -7,6 +7,9 @@
 #include<sstream>
 #include<fstream>
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 void message_callback(GLenum source, GLenum type, GLuint id, GLenum severity,
                       GLsizei length, GLchar const* message, void const* user_name);
 void check_state_status(unsigned int id, GLenum pname);
@@ -31,6 +34,7 @@ void window_size_callback(GLFWwindow *window, int width, int height);
 void key_callback(GLFWwindow *window, int key, int scan_code, int action, int mods);
   
 int main() {
+  
   glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_X11);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
@@ -65,40 +69,73 @@ int main() {
   glfwSetWindowAttrib(window, GLFW_RESIZABLE, GLFW_TRUE);
 
   glViewport(0, 0, width_window, height_window);
-  Vertex v1 = Vertex(glm::vec3{-0.5f, -0.5f, 0.0f}, glm::vec3{1.0f, 0.0f, 0.0f});
-  Vertex v2 = Vertex(glm::vec3{0.5f, -0.5f, 0.0f}, glm::vec3{0.0f, 1.0f, 0.0f});
-  Vertex v3 = Vertex(glm::vec3{0.0f, 0.5f, 0.0f}, glm::vec3{0.0f, 0.0f, 1.0f});
-
-  std::vector<Vertex> vertices {v1, v2, v3};
+  
   unsigned int VBO, VAO;
 
   std::vector<glm::vec3> positions {glm::vec3 {1.0f, 1.0f, 0.0f}, glm::vec3{1.0f, -1.0f, 0.0f}, glm::vec3 {-1.0f, -1.0f, 0.0f}, glm::vec3 {-1.0f, 1.0f, 0.0f}};
   std::vector<glm::vec3> colors {glm::vec3 {1.0f, 0.0f, 0.0f}, glm::vec3 {0.0f, 1.0f, 0.0f}, glm::vec3 {0.0f, 0.0f, 1.0f}, glm::vec3 {1.0f, 1.0f, 1.0f}};
+  std::vector<glm::vec3> tex_coords { glm::vec3 {1.0f, 1.0f, 0.0f}, glm::vec3 {1.0f, 0.0f, 0.0f}, glm::vec3 {0.0f, 0.0f, 0.0f}, glm::vec3 {0.0f, 1.0f, 0.0f} };
   std::vector<glm::uvec3> indices {glm::uvec3 {0, 1, 3}, glm::uvec3 {1, 2, 3}};
 
   glCreateVertexArrays(1, &VAO);
   glCreateBuffers(1, &VBO);
 
-  glVertexArrayVertexBuffer(VAO, 0, VBO, 0, sizeof(float) * 3);
+  unsigned int pos_len = sizeof(float) * 3 * 4;
+  unsigned int col_len = pos_len;
+  unsigned int tex_len = sizeof(float) * 3 * 4;
+  unsigned int ind_len = sizeof(unsigned int) * 2 * 3;
 
-  glNamedBufferStorage(VBO, sizeof(float) * 3 * 4 + sizeof(float) * 3 * 4 + sizeof(unsigned int) * 3 * 2, nullptr, GL_DYNAMIC_STORAGE_BIT);
-  glNamedBufferSubData(VBO, 0, sizeof(float) * 3 * 4, positions.data());
-  glNamedBufferSubData(VBO, sizeof(float) * 3 * 4, sizeof(float) * 4 * 3, colors.data());
-  glNamedBufferSubData(VBO, 2 * sizeof(float) * 3 * 4, sizeof(unsigned int) * 2 * 3, indices.data());
+  glVertexArrayVertexBuffer(VAO, 0, VBO, 0, sizeof(float) * 3);
+  
+  glNamedBufferStorage(VBO, pos_len + col_len + tex_len  + ind_len, nullptr, GL_DYNAMIC_STORAGE_BIT);
+  glNamedBufferSubData(VBO, 0      , pos_len, positions.data());
+  glNamedBufferSubData(VBO, pos_len, col_len, colors.data());
+  glNamedBufferSubData(VBO, pos_len + col_len, tex_len, tex_coords.data());
+  glNamedBufferSubData(VBO, pos_len + col_len + tex_len, ind_len, indices.data());
 
   glVertexArrayAttribFormat(VAO, 0, 3, GL_FLOAT, GL_FALSE, 0);
-  glVertexArrayAttribFormat(VAO, 1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3 * 4);
-
+  glVertexArrayAttribFormat(VAO, 1, 3, GL_FLOAT, GL_FALSE, pos_len);
+  glVertexArrayAttribFormat(VAO, 2, 2, GL_FLOAT, GL_FALSE, pos_len + col_len);
+  
   glVertexArrayAttribBinding(VAO, 0, 0);
   glVertexArrayAttribBinding(VAO, 1, 0);
+  glVertexArrayAttribBinding(VAO, 2, 0);
 
   glEnableVertexArrayAttrib(VAO, 0);
   glEnableVertexArrayAttrib(VAO, 1);
+  glEnableVertexArrayAttrib(VAO, 2);
 
   glBindVertexArray(VAO);
 
   unsigned int shader = compile_shader("./resources/triangle.vert",
                                        "./resources/triangle.frag");
+  int w, h, n;
+  stbi_set_flip_vertically_on_load(true);
+  unsigned char *pixels = stbi_load("./resources/a.png", &w, &h, &n, 0);
+
+  unsigned int tex1;
+  glCreateTextures(GL_TEXTURE_2D, 1, &tex1);
+
+  glTextureParameteri(tex1, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
+  glTextureParameteri(tex1, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
+  glTextureParameteri(tex1, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTextureParameteri(tex1, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+ 
+
+  if(pixels) {
+    glTextureStorage2D(tex1, 1, GL_RGBA8, w, h);
+    glTextureSubImage2D(tex1, 0, 0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+    glGenerateTextureMipmap(tex1);
+    
+  } else {
+    std::cerr << "error loading texture" << std::endl;
+  }
+
+   glUseProgram(shader);
+   glBindTextureUnit(0, tex1);
+   std::cout << "uniform tex1: " << glGetUniformLocation(shader, "Tex1") << " texture: " << tex1 << std::endl;
+  
 
   while(!glfwWindowShouldClose(window)) {
 
@@ -110,9 +147,8 @@ int main() {
                     "./resources/triangle.frag");
       std::cout << "New shader " << shader << std::endl;
     }
-
-    glUseProgram(shader);
-    glUniform2f(2, width_window, height_window);
+    
+    glUniform2f(3, width_window, height_window);
 
     const float background_color[] {0.1f, 0.2f, 0.2f, 1.0f};
 
@@ -161,7 +197,7 @@ void check_stage_status(unsigned int id, GLenum pname) {
     if(result == GL_FALSE) {
       int maxLength {};
       glGetShaderiv(id, GL_INFO_LOG_LENGTH, &maxLength);
-      char infoLog[maxLength];
+      char *infoLog;
       glGetShaderInfoLog(id, maxLength, &maxLength, &infoLog[0]);
       if(pname == GL_LINK_STATUS){
         std::cout << "Error linking" << std::endl;
@@ -175,7 +211,7 @@ void check_stage_status(unsigned int id, GLenum pname) {
     if(result == GL_FALSE) {
       int maxLength {};
       glGetShaderiv(id, GL_INFO_LOG_LENGTH, &maxLength);
-      char infoLog[maxLength];
+      char *infoLog;
       glGetShaderInfoLog(id, maxLength, &maxLength, &infoLog[0]);
       if(pname == GL_COMPILE_STATUS){
         std::cout << "Error compiling" << std::endl;

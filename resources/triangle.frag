@@ -1,12 +1,13 @@
 #version 460 core
 out vec4 FragColor;
 
-layout (location = 2) uniform vec2 iResolution;
+layout (location = 3) uniform vec2 iResolution;
+in vec2 ftex_coords;
+layout (binding = 0) uniform sampler2D Tex1;
 
 in vec3 ourColor;
 
 void main() {
-  vec2 uvs = gl_FragCoord.xy / iResolution;
-  vec3 color = vec3(uvs.x);
-  FragColor = vec4(ourColor, 1.0f);
+
+  FragColor = texture(Tex1, ftex_coords);
 } 
