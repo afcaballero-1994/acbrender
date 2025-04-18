@@ -13,4 +13,6 @@ SRC_FILES=$(find $SRC_DIR -name "*.cc" -o -name "*.c")
 
 $CXX $SRC_FILES $CXXFLAGS -o main $LIBS
 
+bear -- $CXX $SRC_FILES $CXXFLAGS -o main $LIBS
+
 ./main
