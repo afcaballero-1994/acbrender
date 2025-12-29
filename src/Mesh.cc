@@ -46,5 +46,5 @@ void Mesh::destroy() {
 }
 
 void Mesh::draw() {
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, indices.data());
+    glDrawElements(GL_TRIANGLES, indices.size() * 3, GL_UNSIGNED_INT, indices.data());
 }

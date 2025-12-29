@@ -73,8 +73,6 @@ int main() {
         glUniformMatrix4fv(6, 1, GL_FALSE, glm::value_ptr(model));
 
         display.clear();
-        ;
-        // glDrawArrays(GL_TRIANGLES, 0, 6);
         mesh.draw();
         display.swap();
     }
