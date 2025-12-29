@@ -214,12 +214,12 @@
       "-x",
       "c++",
       "-o",
-      "/tmp/glad-4408a0.o",
+      "/tmp/glad-3bd736.o",
       "src/glad.c"
     ],
     "directory": "/home/andres/projects/acbrender",
     "file": "/home/andres/projects/acbrender/src/glad.c",
-    "output": "/tmp/glad-4408a0.o"
+    "output": "/tmp/glad-3bd736.o"
   },
   {
     "arguments": [
@@ -298,12 +298,12 @@
       "-x",
       "c++",
       "-o",
-      "/tmp/Texture-900620.o",
+      "/tmp/Texture-8857e7.o",
       "src/Texture.cc"
     ],
     "directory": "/home/andres/projects/acbrender",
     "file": "/home/andres/projects/acbrender/src/Texture.cc",
-    "output": "/tmp/Texture-900620.o"
+    "output": "/tmp/Texture-8857e7.o"
   },
   {
     "arguments": [
@@ -382,12 +382,12 @@
       "-x",
       "c++",
       "-o",
-      "/tmp/Shader-f1fb09.o",
+      "/tmp/Shader-f6a892.o",
       "src/Shader.cc"
     ],
     "directory": "/home/andres/projects/acbrender",
     "file": "/home/andres/projects/acbrender/src/Shader.cc",
-    "output": "/tmp/Shader-f1fb09.o"
+    "output": "/tmp/Shader-f6a892.o"
   },
   {
     "arguments": [
@@ -466,12 +466,12 @@
       "-x",
       "c++",
       "-o",
-      "/tmp/Display-3903ab.o",
+      "/tmp/Display-1bc4a6.o",
       "src/Display.cc"
     ],
     "directory": "/home/andres/projects/acbrender",
     "file": "/home/andres/projects/acbrender/src/Display.cc",
-    "output": "/tmp/Display-3903ab.o"
+    "output": "/tmp/Display-1bc4a6.o"
   },
   {
     "arguments": [
@@ -550,12 +550,12 @@
       "-x",
       "c++",
       "-o",
-      "/tmp/main-2b8d78.o",
+      "/tmp/main-cd194e.o",
       "src/main.cc"
     ],
     "directory": "/home/andres/projects/acbrender",
     "file": "/home/andres/projects/acbrender/src/main.cc",
-    "output": "/tmp/main-2b8d78.o"
+    "output": "/tmp/main-cd194e.o"
   },
   {
     "arguments": [
@@ -634,11 +634,11 @@
       "-x",
       "c++",
       "-o",
-      "/tmp/Mesh-6834c5.o",
+      "/tmp/Mesh-0e50f4.o",
       "src/Mesh.cc"
     ],
     "directory": "/home/andres/projects/acbrender",
     "file": "/home/andres/projects/acbrender/src/Mesh.cc",
-    "output": "/tmp/Mesh-6834c5.o"
+    "output": "/tmp/Mesh-0e50f4.o"
   }
 ]
