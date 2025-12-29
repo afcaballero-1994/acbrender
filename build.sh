@@ -6,7 +6,7 @@ INCLUDE_DIR="include"
 SRC_DIR="src"
 LIBS="-lglfw -ldl"
 OUTPUT="crender"
-CXX="clang++"
+CXX="g++"
 CXXFLAGS="-I$INCLUDE_DIR -std=c++23 -Wextra -Wall -Wshadow -Wpointer-arith -Wcast-align -Wconversion -Wunreachable-code -pedantic -g"
 
 SRC_FILES=$(find $SRC_DIR -name "*.cc" -o -name "*.c")

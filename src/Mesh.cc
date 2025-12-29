@@ -6,21 +6,22 @@ Vertex::Vertex(const glm::vec3 &pos, const glm::vec3 &color,
 : position(pos), color(color), tex_coords(tex_coord) {};
 
 Mesh::Mesh(int numVAO, int numVBO) {
-    vertices.reserve(300);
     glCreateVertexArrays(numVAO, &VAO);
     glCreateBuffers(numVBO, &VBO);
 }
 
 void Mesh::append_data() {
 
-    glVertexArrayVertexBuffer(VAO, 0, VBO, 0, sizeof(Vertex));
-
-    unsigned long int ver_len = sizeof(Vertex) * vertices.size();
-    unsigned long int ind_len = sizeof(glm::uvec3) * indices.size();
-
-    glNamedBufferStorage(VBO, ver_len + ind_len, nullptr, GL_DYNAMIC_STORAGE_BIT);
+    GLsizeiptr ver_len = GLsizeiptr(sizeof(Vertex) * vertices.size());
+    GLsizeiptr ind_len = GLsizeiptr(sizeof(glm::uvec3) * indices.size());
+    glNamedBufferStorage(VBO, GLsizeiptr(ver_len + ind_len), nullptr,
+                         GL_DYNAMIC_STORAGE_BIT);
+    
     glNamedBufferSubData(VBO, 0, ver_len, vertices.data());
     glNamedBufferSubData(VBO, ver_len, ind_len, indices.data());
+
+    glVertexArrayVertexBuffer(VAO, 0, VBO, 0, sizeof(Vertex));
+    glVertexArrayElementBuffer(VAO, VBO);
 
     glEnableVertexArrayAttrib(VAO, 0);
     glEnableVertexArrayAttrib(VAO, 1);
@@ -46,5 +47,6 @@ void Mesh::destroy() {
 }
 
 void Mesh::draw() {
-    glDrawElements(GL_TRIANGLES, indices.size() * 3, GL_UNSIGNED_INT, indices.data());
+    unsigned long ind_offset = sizeof(Vertex) * vertices.size();
+    glDrawElements(GL_TRIANGLES, (GLsizei) (indices.size() * sizeof(glm::uvec3)), GL_UNSIGNED_INT, (void *)ind_offset);
 }
