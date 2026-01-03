@@ -2,11 +2,10 @@
 out vec4 FragColor;
 
 layout (location = 3) uniform vec2 iResolution;
-in vec2 ftex_coords;
 layout (binding = 0) uniform sampler2D Tex1;
 
 in vec3 ourColor;
-
+in vec2 ftex_coords;
 vec2 uv = gl_FragCoord.xy / iResolution;
 
 void main() {
@@ -17,5 +16,5 @@ void main() {
 
   float luminance = dot(texture(Tex1, ftex_coords).rgb, W);
 
-  FragColor = vec4(vec3(luminance), 1.0f) * newcol;
+  FragColor = texture(Tex1, ftex_coords);
 } 

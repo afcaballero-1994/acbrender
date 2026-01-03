@@ -1,3 +1,4 @@
 main
 resources/*.png
+resources/backpak/
 .cache

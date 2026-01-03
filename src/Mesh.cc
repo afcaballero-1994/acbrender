@@ -1,4 +1,5 @@
 #include "Mesh.hpp"
+#include "glad/glad.h"
 #include <cstddef>
 
 Vertex::Vertex(const glm::vec3 &pos, const glm::vec3 &color,
@@ -13,7 +14,7 @@ Mesh::Mesh(int numVAO, int numVBO) {
 void Mesh::append_data() {
 
     GLsizeiptr ver_len = GLsizeiptr(sizeof(Vertex) * vertices.size());
-    GLsizeiptr ind_len = GLsizeiptr(sizeof(glm::uvec3) * indices.size());
+    GLsizeiptr ind_len = GLsizeiptr(sizeof(indices[0]) * indices.size());
     glNamedBufferStorage(VBO, GLsizeiptr(ver_len + ind_len), nullptr,
                          GL_DYNAMIC_STORAGE_BIT);
     
@@ -48,5 +49,5 @@ void Mesh::destroy() {
 
 void Mesh::draw() {
     unsigned long ind_offset = sizeof(Vertex) * vertices.size();
-    glDrawElements(GL_TRIANGLES, (GLsizei) (indices.size() * sizeof(glm::uvec3)), GL_UNSIGNED_INT, (void *)ind_offset);
+    glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(), GL_UNSIGNED_INT, (void *)ind_offset);
 }

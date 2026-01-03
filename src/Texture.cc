@@ -19,14 +19,15 @@ Texture::Texture(char const *filename, const std::string& type) {
   stbi_set_flip_vertically_on_load(true);
   unsigned char *pixels = stbi_load(filename, &w, &h, &n, 0);
 
-  if(pixels != NULL) {
-    glTextureStorage2D(ID, 1, GL_RGBA8, w, h);
-    glTextureSubImage2D(ID, 0, 0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+  if (pixels != NULL) {
+    glTextureStorage2D(ID, 1, GL_RGB8, w, h);
+    glTextureSubImage2D(ID, 0, 0, 0, w, h, GL_RGB, GL_UNSIGNED_BYTE, pixels);
     glGenerateTextureMipmap(ID);
     stbi_image_free(pixels);
     
   } else {
-    std::cerr << "error loading texture" << std::endl;
+      std::cerr << "error loading texture" << std::endl;
+      exit(1);
   }
 }
 
