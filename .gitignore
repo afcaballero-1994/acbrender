@@ -2,3 +2,6 @@ main
 resources/*.png
 resources/backpak/
 .cache
+gf2
+/resources/backpack/
+imgui.ini
