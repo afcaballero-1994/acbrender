@@ -3,6 +3,7 @@
     "file": "src/glad.c",
     "arguments": [
       "clang++",
+      "compile_commands.json",
       "src/glad.c",
       "-Iinclude",
       "-Iinclude/imgui",
@@ -27,6 +28,7 @@
     "file": "src/Texture.cc",
     "arguments": [
       "clang++",
+      "compile_commands.json",
       "src/Texture.cc",
       "-Iinclude",
       "-Iinclude/imgui",
@@ -51,6 +53,7 @@
     "file": "src/Shader.cc",
     "arguments": [
       "clang++",
+      "compile_commands.json",
       "src/Shader.cc",
       "-Iinclude",
       "-Iinclude/imgui",
@@ -75,6 +78,7 @@
     "file": "src/Display.cc",
     "arguments": [
       "clang++",
+      "compile_commands.json",
       "src/Display.cc",
       "-Iinclude",
       "-Iinclude/imgui",
@@ -99,6 +103,7 @@
     "file": "src/main.cc",
     "arguments": [
       "clang++",
+      "compile_commands.json",
       "src/main.cc",
       "-Iinclude",
       "-Iinclude/imgui",
@@ -123,6 +128,7 @@
     "file": "src/Mesh.cc",
     "arguments": [
       "clang++",
+      "compile_commands.json",
       "src/Mesh.cc",
       "-Iinclude",
       "-Iinclude/imgui",
@@ -147,6 +153,7 @@
     "file": "include/imgui/imgui.cpp",
     "arguments": [
       "clang++",
+      "compile_commands.json",
       "include/imgui/imgui.cpp",
       "-Iinclude",
       "-Iinclude/imgui",
@@ -171,6 +178,7 @@
     "file": "include/imgui/imgui_demo.cpp",
     "arguments": [
       "clang++",
+      "compile_commands.json",
       "include/imgui/imgui_demo.cpp",
       "-Iinclude",
       "-Iinclude/imgui",
@@ -195,6 +203,7 @@
     "file": "include/imgui/imgui_draw.cpp",
     "arguments": [
       "clang++",
+      "compile_commands.json",
       "include/imgui/imgui_draw.cpp",
       "-Iinclude",
       "-Iinclude/imgui",
@@ -219,6 +228,7 @@
     "file": "include/imgui/imgui_tables.cpp",
     "arguments": [
       "clang++",
+      "compile_commands.json",
       "include/imgui/imgui_tables.cpp",
       "-Iinclude",
       "-Iinclude/imgui",
@@ -243,6 +253,7 @@
     "file": "include/imgui/imgui_widgets.cpp",
     "arguments": [
       "clang++",
+      "compile_commands.json",
       "include/imgui/imgui_widgets.cpp",
       "-Iinclude",
       "-Iinclude/imgui",
@@ -267,6 +278,7 @@
     "file": "include/imgui/backends/imgui_impl_glfw.cpp",
     "arguments": [
       "clang++",
+      "compile_commands.json",
       "include/imgui/backends/imgui_impl_glfw.cpp",
       "-Iinclude",
       "-Iinclude/imgui",
@@ -291,6 +303,7 @@
     "file": "include/imgui/backends/imgui_impl_opengl3.cpp",
     "arguments": [
       "clang++",
+      "compile_commands.json",
       "include/imgui/backends/imgui_impl_opengl3.cpp",
       "-Iinclude",
       "-Iinclude/imgui",

@@ -11,10 +11,12 @@ vec2 uv = gl_FragCoord.xy / iResolution;
 void main() {
   const vec3 W = vec3(0.2125f, 0.7154, 0.0721);
   vec3 col = vec3(uv.x);
+  vec3 lighcol = vec3(0.8f, 0.6f, 0.6f);
   //FragColor = vec4(col, 1.0f);
   vec4 newcol = vec4(col, 1.0f);
 
   float luminance = dot(texture(Tex1, ftex_coords).rgb, W);
 
   FragColor = texture(Tex1, ftex_coords);
+  FragColor = vec4(FragColor.rgb * lighcol, 1.0f);
 } 

@@ -1,8 +1,10 @@
 #include "Mesh.hpp"
 #include "Shader.hpp"
 #include "Texture.hpp"
+#include "glad/glad.h"
 #include <GLFW/glfw3.h>
 #include <assimp/mesh.h>
+#include <glm/ext/matrix_transform.hpp>
 #include <glm/fwd.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
 #include "Display.hpp"
@@ -35,7 +37,9 @@ void processMesh(Mesh *obj, aiNode *node, const aiScene *scene) {
                 texcord = glm::vec2(0.0f, 0.0f);
             }
 
-            obj->vertices.emplace_back(Vertex{pos, norm, texcord});
+            obj->vertices.emplace_back(Vertex{
+                pos,
+                glm::vec3(0.0f, 0.0f, 0.0f),norm, texcord});
         }
         for (size_t k = 0; k < m->mNumFaces; k++) {
             aiFace face = m->mFaces[k];
@@ -108,7 +112,19 @@ int main() {
     ImVec4 cpos = ImVec4(0.0, 0.0f, -6.0f, 0.0f);
     float angle = 0.0f;
     ImVec4 crotation = ImVec4(1.0f, 0.0f, 0.0f, 0.0f);
-
+    GLuint matUBO;
+    struct Matrices {
+        glm::mat4 projection;
+        glm::mat4 view;
+        glm::mat4 model;
+        Matrices(glm::mat4 p, glm::mat4 v, glm::mat4 m)
+            : projection(p), view(v), model(m){};
+    };
+    Matrices ma = {projection, glm::mat4{1.0f}, glm::mat4{1.0f}};
+    ma.view = glm::translate(ma.view, glm::vec3(cpos.x, cpos.y, cpos.z));
+    glCreateBuffers(1, &matUBO);
+    glNamedBufferData(matUBO, sizeof(Matrices), &ma, GL_DYNAMIC_DRAW);
+    
     while (!glfwWindowShouldClose(display.window)) {
 
         glfwPollEvents();
@@ -145,19 +161,20 @@ int main() {
             }
             ImGui::End();
         }
+        ma = {projection, glm::mat4{1.0f}, glm::mat4{1.0f}};
+        ma.view = glm::lookAt(glm::vec3(cpos.x, cpos.y, cpos.z), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        ma.model = glm::rotate(
+                               ma.model, angle, glm::vec3(crotation.x, crotation.y, crotation.z));
+        glNamedBufferSubData(matUBO, 0, sizeof(Matrices), &ma);
+        
+        
+        
+        GLuint blockIndex = glGetProgramResourceIndex(shader.ID,
+                                                      GL_UNIFORM_BLOCK, "MatrixBlock");
 
-        glUniformMatrix4fv(4, 1, GL_FALSE, glm::value_ptr(projection));
-
-        glm::mat4 view{glm::mat4(1.0f)};
-        view = glm::translate(view, glm::vec3(cpos.x, cpos.y, cpos.z));
-        view = glm::rotate(view, angle,
-                           glm::vec3(crotation.x, crotation.y, crotation.z));
-
-        glUniform2f(3, width_window, height_window);
-        glUniformMatrix4fv(5, 1, GL_FALSE, glm::value_ptr(view));
-
-        glm::mat4 model = glm::mat4(1.0f);
-        glUniformMatrix4fv(6, 1, GL_FALSE, glm::value_ptr(model));
+        glUniformBlockBinding(shader.ID, blockIndex, 0);
+        glBindBufferBase(GL_UNIFORM_BUFFER, blockIndex, matUBO);
+        
         ImGui::Render();
         display.clear();
         object.draw();

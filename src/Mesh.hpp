@@ -9,22 +9,24 @@
 #include <vector>
 
 struct Vertex {
-  glm::vec3 position;
-  glm::vec3 color;
-  glm::vec2 tex_coords;
+    glm::vec3 position;
+    glm::vec3 color;
+    glm::vec3 normals;
+    glm::vec2 tex_coords;
 
-  Vertex(const glm::vec3 &pos, const glm::vec3 &color,
-         const glm::vec2 &tex_coord);
+    Vertex(const glm::vec3 &pos, const glm::vec3 &color,
+           const glm::vec3 &norm,
+           const glm::vec2 &tex_coord);
 };
 
 struct Mesh {
-  unsigned int VBO, VAO;
-  std::vector<Vertex> vertices;
-  std::vector<unsigned int> indices;
-  std::vector<Texture> textures;
+    unsigned int VBO, VAO;
+    std::vector<Vertex> vertices;
+    std::vector<unsigned int> indices;
+    std::vector<Texture> textures;
 
-  Mesh(int numVAO = 1, int numVBO = 1);
-  void append_data();
-  void draw();
-  void destroy();
+    Mesh(int numVAO = 1, int numVBO = 1);
+    void append_data();
+    void draw();
+    void destroy();
 };
